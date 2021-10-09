@@ -20,6 +20,7 @@ class PublicAPI:
         pass
 
     def get_markets(self, pair_id=None):
+        # test
         response_ramzinex = None
         try:
             url = "https://publicapi.ramzinex.com/exchange/api/v1.0/exchange/pairs"
