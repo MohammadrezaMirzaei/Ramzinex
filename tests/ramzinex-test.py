@@ -1,11 +1,11 @@
 import unittest
-import python_razminex_api.ramzinex
+import python_ramzinex_api.ramzinex
 
 
 class RamzinexTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.public_api = python_razminex_api.ramzinex.PublicAPI()
+        self.public_api = python_ramzinex_api.ramzinex.PublicAPI()
 
     def test_zero(self):
         """Test get_markets"""
