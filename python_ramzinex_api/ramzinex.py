@@ -1,5 +1,7 @@
 import json
 from venv import logger
+import pandas as pd
+from datetime import datetime
 
 # # # # -------------------------------------------------------------------------------- # # # #
 import cloudscraper
@@ -38,3 +40,35 @@ class PublicAPI:
             err += "\n" + str(e)
             result = {"status": -1, "error": err, "data": None}
             return result
+
+    def get_markets_turnover(self, data):
+        if data is not None:
+            try:
+                pairs_volume = []
+                usdt_pairs_volume = []
+                irr_pairs_volume = []
+                for market in data:
+                    try:
+                        pair_dict = {"pair": market['tv_symbol']['ramzinex'],
+                                     "quote_volume": str(market["financial"]["last24h"]['quote_volume']),
+                                     "base_volume": str(market["financial"]["last24h"]['base_volume']),
+                                     "date_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+                        pairs_volume.append(pair_dict)
+                        if market['tv_symbol']['ramzinex'][-3:] == "irr":
+                            irr_pairs_volume.append(pair_dict)
+                        elif market['tv_symbol']['ramzinex'][-4:] == "usdt":
+                            usdt_pairs_volume.append(pair_dict)
+                    except Exception as e:
+                        logger.exception(str(e))
+
+                df = pd.DataFrame(pairs_volume)
+                df_irr = pd.DataFrame(irr_pairs_volume)
+                irr_markets_turnover = df_irr[['quote_volume']].astype(float).sum()['quote_volume']
+                df_usdt = pd.DataFrame(usdt_pairs_volume)
+                usdt_markets_turnover = df_usdt[['quote_volume']].astype(float).sum()['quote_volume']
+                return [irr_markets_turnover, usdt_markets_turnover, df, df_irr, df_usdt]
+            except Exception as e:
+                err = str(e)
+                logger.exception(err)
+                result = {"status": -1, "error": err, "data": None}
+                return result
