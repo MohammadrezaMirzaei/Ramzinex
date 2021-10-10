@@ -44,9 +44,7 @@ class PublicAPI:
     def get_markets_turnover(self, data):
         if data is not None:
             try:
-                pairs_volume = []
-                usdt_pairs_volume = []
-                irr_pairs_volume = []
+                pairs_volume, usdt_pairs_volume, irr_pairs_volume = [], [], []
                 for market in data:
                     try:
                         pair_dict = {"pair": market['tv_symbol']['ramzinex'],
