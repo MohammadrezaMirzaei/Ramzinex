@@ -21,8 +21,24 @@ class PublicAPI:
         # self.api_ramzinex = api_ramzinex
         pass
 
+    def get_prices(self):
+        response_ramzinex = None
+        try:
+            url = "https://publicapi.ramzinex.com/exchange/api/exchange/prices"
+            response_ramzinex = scraper.get(url)
+            check_response_ramzinex = json.loads(response_ramzinex.text)
+            return check_response_ramzinex
+        except Exception as e:
+            logger.exception(str(e))
+            err = "#error #get_prices"
+            if response_ramzinex is not None:
+                err += "\nstatus_code:\n" + str(response_ramzinex.status_code) + \
+                       "\nreason:\n" + str(response_ramzinex.reason)
+            err += "\n" + str(e)
+            result = {"status": -1, "error": err, "data": None}
+            return result
+
     def get_markets(self, pair_id=None):
-        # test
         response_ramzinex = None
         try:
             url = "https://publicapi.ramzinex.com/exchange/api/v1.0/exchange/pairs"
