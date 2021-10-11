@@ -16,7 +16,7 @@ with open(path.join(HERE, 'README.md'), encoding='utf-8') as f:
 setup(
     name="python-ramzinex-api",
     version="0.1.2",
-    description="Demo library",
+    description="Ramzinex Python Library",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://python_ramzinex_api.readthedocs.io/",

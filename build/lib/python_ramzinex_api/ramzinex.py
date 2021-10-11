@@ -1,15 +1,22 @@
+# # # # -------------------------------------------------------------------------------- # # # #
+"""
+This is the official python library for Ramzinex.com Cryptocurrency Exchange
+Author: Mohammadreza Mirzaei
+Email: mirzaeimohammadreza98@gmail.com
+LinkedIn: https://www.linkedin.com/in/mohammad-reza-mirzaei/
+"""
+# # # # -------------------------------------------------------------------------------- # # # #
 import json
 from venv import logger
 import pandas as pd
 from datetime import datetime
-
-# # # # -------------------------------------------------------------------------------- # # # #
 import cloudscraper
-scraper = cloudscraper.create_scraper()  # returns a CloudScraper instance
+
+
 # # # # -------------------------------------------------------------------------------- # # # #
 
 
-class PublicAPI:
+class Client:
     """
     This is the official python library for Ramzinex.com Cryptocurrency Exchange
     Author: Mohammadreza Mirzaei
@@ -17,51 +24,44 @@ class PublicAPI:
     LinkedIn: https://www.linkedin.com/in/mohammad-reza-mirzaei/
     """
 
-    def __init__(self):
-        # self.api_ramzinex = api_ramzinex
-        pass
+    def __init__(self, api=None):
+        if api is not None:
+            self.api = api  # client Ramzinex API
+        else:
+            pass
+        self.scraper = cloudscraper.create_scraper()  # returns a CloudScraper instance
+        self.response_ramzinex = None
+
+    # # # # -------------------------------------------------------------------------------- # # # #
+    # # # # Public API
+    # # # # -------------------------------------------------------------------------------- # # # #
 
     def get_prices(self):
-        response_ramzinex = None
         try:
             url = "https://publicapi.ramzinex.com/exchange/api/exchange/prices"
-            response_ramzinex = scraper.get(url)
-            check_response_ramzinex = json.loads(response_ramzinex.text)
+            self.response_ramzinex = self.scraper.get(url)
+            check_response_ramzinex = json.loads(self.response_ramzinex.text)
             return check_response_ramzinex
         except Exception as e:
-            logger.exception(str(e))
-            err = "#error #get_prices"
-            if response_ramzinex is not None:
-                err += "\nstatus_code:\n" + str(response_ramzinex.status_code) + \
-                       "\nreason:\n" + str(response_ramzinex.reason)
-            err += "\n" + str(e)
-            result = {"status": -1, "error": err, "data": None}
-            return result
+            return Client.error_result(self, e=e, fname="get_prices", response=self.response_ramzinex)
 
     def get_markets(self, pair_id=None):
-        response_ramzinex = None
         try:
             url = "https://publicapi.ramzinex.com/exchange/api/v1.0/exchange/pairs"
             if pair_id is not None:
                 url += "/" + str(pair_id)
-            response_ramzinex = scraper.get(url)
-            check_response_ramzinex = json.loads(response_ramzinex.text)
+            self.response_ramzinex = self.scraper.get(url)
+            check_response_ramzinex = json.loads(self.response_ramzinex.text)
             return check_response_ramzinex
         except Exception as e:
-            logger.exception(str(e))
-            err = "#error #get_markets"
-            if response_ramzinex is not None:
-                err += "\nstatus_code:\n" + str(response_ramzinex.status_code) + \
-                       "\nreason:\n" + str(response_ramzinex.reason)
-            err += "\n" + str(e)
-            result = {"status": -1, "error": err, "data": None}
-            return result
+            return Client.error_result(self, e=e, fname="get_markets", response=self.response_ramzinex)
 
-    def get_markets_turnover(self, data):
+    def get_markets_turnover(self):
+        data = Client.get_markets()
         if data is not None:
             try:
                 pairs_volume, usdt_pairs_volume, irr_pairs_volume = [], [], []
-                for market in data:
+                for market in data["data"]:
                     try:
                         pair_dict = {"pair": market['tv_symbol']['ramzinex'],
                                      "quote_volume": str(market["financial"]["last24h"]['quote_volume']),
@@ -75,14 +75,55 @@ class PublicAPI:
                     except Exception as e:
                         logger.exception(str(e))
 
-                df = pd.DataFrame(pairs_volume)
+                # df = pd.DataFrame(pairs_volume)
                 df_irr = pd.DataFrame(irr_pairs_volume)
                 irr_markets_turnover = df_irr[['quote_volume']].astype(float).sum()['quote_volume']
                 df_usdt = pd.DataFrame(usdt_pairs_volume)
                 usdt_markets_turnover = df_usdt[['quote_volume']].astype(float).sum()['quote_volume']
-                return [irr_markets_turnover, usdt_markets_turnover, df, df_irr, df_usdt]
-            except Exception as e:
-                err = str(e)
-                logger.exception(err)
-                result = {"status": -1, "error": err, "data": None}
+
+                result_data = {"irr_markets_turnover": irr_markets_turnover,
+                               "usdt_markets_turnover": usdt_markets_turnover,
+                               "pairs_volume": pairs_volume,
+                               "irr_pairs_volume": irr_pairs_volume,
+                               "usdt_pairs_volume": usdt_pairs_volume
+                               }
+                result = {"status": 0, "message": "ok", "data": result_data}
                 return result
+            except Exception as e:
+                return Client.error_result(self, e=e, fname="get_markets_turnover")
+
+    def get_orderbook(self, pair_id, side):  # get ramzinex orderbook for pair
+        print(self)
+        url = "https://publicapi.ramzinex.com/exchange/api/v1.0/exchange/orderbooks/"
+        try:
+            if side == "sells":
+                url += str(pair_id) + "/sells?readable=0&reverse=1"
+            elif side == "buys":
+                url += str(pair_id) + "/buys?readable=0"
+            self.response_ramzinex = self.scraper.get(url=url)
+            orderbook_ramzinex = json.loads(self.response_ramzinex.text)
+            return orderbook_ramzinex
+        except Exception as e:
+            return Client.error_result(self, e=e, fname="get_orderbook", response=self.response_ramzinex)
+
+    # # # # -------------------------------------------------------------------------------- # # # #
+    # # # # Private API
+    # # # # -------------------------------------------------------------------------------- # # # #
+
+    # # # # -------------------------------------------------------------------------------- # # # #
+    # # # # Others
+    # # # # -------------------------------------------------------------------------------- # # # #
+
+    def error_result(self, e, fname, response=None):
+        try:
+            logger.exception(str(e))
+            err = "#error #" + fname
+            if response is not None:
+                err += "\nstatus_code:\n" + str(response.status_code) + \
+                       "\nreason:\n" + str(response.reason)
+            err += "\n" + str(e)
+            result = {"status": -1, "error": err, "data": None}
+            return result
+        except:
+            result = {"status": -1, "error": "Unknown Error", "data": None}
+            return result
