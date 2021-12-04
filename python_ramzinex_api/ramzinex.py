@@ -98,6 +98,7 @@ class Client:
                            "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                            "pairs_volume": pairs_volume,
                            }
+            
             result = {"status": 0, "message": "ok", "data": result_data}
             return result
         except Exception as e:
