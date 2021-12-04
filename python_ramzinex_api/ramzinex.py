@@ -57,13 +57,13 @@ class Client:
             return Client.error_result(self, e=e, fname="get_markets", response=self.response_ramzinex)
 
     def get_markets_turnover(self):
-        gmarkets = Client.get_markets()
+        gmarkets = Client.get_markets(self)
         pairs_volume, usdt_pairs_volume, irr_pairs_volume = [], [], []
         tether_price = 0
         try:
             for market in gmarkets["data"]:
                 try:
-                    pair_dict = {"pair": market['tv_symbol']['ramzinex'],
+                    pair_dict = {"pair": market["tv_symbol"]["ramzinex"],
                                  "base_currency_symbol": market['base_currency_symbol']["en"],
                                  "quote_currency_symbol": market['quote_currency_symbol']["en"],
                                  "quote_volume": str(market["financial"]["last24h"]['quote_volume']),
@@ -82,18 +82,18 @@ class Client:
             irr_markets_turnover = df_irr[['quote_volume']].astype(float).sum()['quote_volume']
             usdt_markets_turnover = df_usdt[['quote_volume']].astype(float).sum()['quote_volume']
 
-            df_irru = df_irr[df_irr['currency'].isin(df_usdt['currency'])]
+            df_irru = df_irr[df_irr['base_currency_symbol'].isin(df_usdt['base_currency_symbol'])]
             df_irru = df_irru.reset_index(drop=True)
 
             iu_markets_turnover = df_irru[['quote_volume']].astype(float).sum()['quote_volume']
             percent = 100 * (usdt_markets_turnover * tether_price) / irr_markets_turnover
             percent_iu = 100 * (usdt_markets_turnover * tether_price) / iu_markets_turnover
 
-            result_data = {"irr_MT": irr_markets_turnover,
-                           "usdt_MT": usdt_markets_turnover,
-                           "common_irrusdt_MT": iu_markets_turnover,
-                           "percent": percent,
-                           "common_irrusdt_percent": percent_iu,
+            result_data = {"irr_MT": round(irr_markets_turnover),
+                           "usdt_MT": round(usdt_markets_turnover, 2),
+                           "common_irrusdt_MT": round(iu_markets_turnover, 2),
+                           "percent": round(percent, 2),
+                           "common_irrusdt_percent": round(percent_iu, 2),
                            "tether_price": tether_price,
                            "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                            "pairs_volume": pairs_volume,
@@ -104,14 +104,9 @@ class Client:
         except Exception as e:
             return Client.error_result(self, e=e, fname="get_markets_turnover")
 
-    def get_orderbook(self, pair_id, side):  # get ramzinex orderbook for pair
-        print(self)
-        url = "https://publicapi.ramzinex.com/exchange/api/v1.0/exchange/orderbooks/"
+    def get_orderbooks(self):  # get ramzinex orderbook for pair
         try:
-            if side == "sells":
-                url += str(pair_id) + "/sells?readable=0&reverse=1"
-            elif side == "buys":
-                url += str(pair_id) + "/buys?readable=0"
+            url = "https://publicapi.ramzinex.com/exchange/api/v1.0/exchange/orderbooks/buys_sells"
             self.response_ramzinex = self.scraper.get(url=url)
             check_response_ramzinex = json.loads(self.response_ramzinex.text)
             return check_response_ramzinex
