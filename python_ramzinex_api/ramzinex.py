@@ -177,10 +177,10 @@ class Client:
         except Exception as e:
             return Client.error_result(self, e=e, fname="get_orders", response=self.response_ramzinex)
 
-    def get_balance(self, api=self.api):  # check ramzinex balance
+    def get_balance(self):  # check ramzinex balance
         try:
             url = "https://ramzinex.com/exchange/api/v1.0/exchange/users/me/funds/details"
-            headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {}'.format(api)}
+            headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {}'.format(self.api)}
             response_ramzinex = self.scraper.get(url=url, headers=headers)
             check_response_ramzinex = json.loads(response_ramzinex.text)
             return check_response_ramzinex
