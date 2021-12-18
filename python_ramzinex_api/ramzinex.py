@@ -187,6 +187,27 @@ class Client:
         except Exception as e:
             return Client.error_result(self, e=e, fname="get_balance", response=self.response_ramzinex)
 
+    def get_withdraws(self, offset=None, limit=1000):
+        try:
+            url = "https://ramzinex.com/exchange/api/v1.0/exchange/users/me/funds/withdraws"
+            headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {}'.format(self.api)}
+            params = {"offset": offset, "limit": limit}
+            self.response_ramzinex = self.scraper.post(url=url, headers=headers, data=json.dumps(params))
+            check_response_ramzinex = json.loads(self.response_ramzinex.text)
+            return check_response_ramzinex
+        except Exception as e:
+            return Client.error_result(self, e=e, fname="get_withdraws", response=self.response_ramzinex)
+
+    def get_deposits(self, offset=None, limit=None):
+        try:
+            url = "https://ramzinex.com/exchange/api/v1.0/exchange/users/me/funds/deposits"
+            headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {}'.format(self.api)}
+            params = {"offset": offset, "limit": limit}
+            self.response_ramzinex = self.scraper.post(url=url, headers=headers, data=json.dumps(params))
+            check_response_ramzinex = json.loads(self.response_ramzinex.text)
+            return check_response_ramzinex
+        except Exception as e:
+            return Client.error_result(self, e=e, fname="get_deposits", response=self.response_ramzinex)
     # # # # -------------------------------------------------------------------------------- # # # #
     # # # # Others
     # # # # -------------------------------------------------------------------------------- # # # #
