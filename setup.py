@@ -1,5 +1,5 @@
-# twine upload --skip-existing dist/*
 # python setup.py sdist bdist_wheel
+# twine upload --skip-existing dist/*
 
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
@@ -18,7 +18,7 @@ with open(path.join(HERE, 'README.md'), encoding='utf-8') as f:
 # This call to setup() does all the work
 setup(
     name="python-ramzinex-api",
-    version="0.1.9",
+    version="0.1.11",
     description="Ramzinex Python Library",
     long_description=long_description,
     long_description_content_type="text/markdown",

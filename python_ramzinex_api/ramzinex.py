@@ -192,7 +192,7 @@ class Client:
             url = "https://ramzinex.com/exchange/api/v1.0/exchange/users/me/funds/withdraws"
             headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {}'.format(self.api)}
             params = {"offset": offset, "limit": limit}
-            self.response_ramzinex = self.scraper.post(url=url, headers=headers, data=json.dumps(params))
+            self.response_ramzinex = self.scraper.get(url=url, headers=headers, data=json.dumps(params))
             check_response_ramzinex = json.loads(self.response_ramzinex.text)
             return check_response_ramzinex
         except Exception as e:
@@ -203,7 +203,7 @@ class Client:
             url = "https://ramzinex.com/exchange/api/v1.0/exchange/users/me/funds/deposits"
             headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {}'.format(self.api)}
             params = {"offset": offset, "limit": limit}
-            self.response_ramzinex = self.scraper.post(url=url, headers=headers, data=json.dumps(params))
+            self.response_ramzinex = self.scraper.get(url=url, headers=headers, data=json.dumps(params))
             check_response_ramzinex = json.loads(self.response_ramzinex.text)
             return check_response_ramzinex
         except Exception as e:

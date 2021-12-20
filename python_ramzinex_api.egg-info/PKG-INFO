@@ -1,11 +1,16 @@
 Metadata-Version: 2.1
 Name: python-ramzinex-api
-Version: 0.1.9
+Version: 0.1.11
 Summary: Ramzinex Python Library
 Home-page: https://python_ramzinex_api.readthedocs.io/
 Author: Mohammadreza Mirzaei
 Author-email: mirzaeimohammadreza98@gmail.com
 License: MIT
+Description: # Ramzinex
+        ### This is the official python library for Ramzinex.com Cryptocurrency Exchange
+        ##### Author: Mohammadreza Mirzaei
+        this is a test.
+        adding more functions.
 Platform: UNKNOWN
 Classifier: Intended Audience :: Developers
 Classifier: License :: OSI Approved :: MIT License
@@ -17,10 +22,3 @@ Classifier: Programming Language :: Python :: 3.8
 Classifier: Programming Language :: Python :: 3.9
 Classifier: Operating System :: OS Independent
 Description-Content-Type: text/markdown
-
-# Ramzinex
-### This is the official python library for Ramzinex.com Cryptocurrency Exchange
-##### Author: Mohammadreza Mirzaei
-this is a test.
-adding more functions.
-
