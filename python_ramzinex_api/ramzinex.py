@@ -113,6 +113,14 @@ class Client:
         except Exception as e:
             return Client.error_result(self, e=e, fname="get_orderbook", response=self.response_ramzinex)
 
+    def get_currencies(self):
+        try:
+            url = "https://ramzinex.com/exchange/api/v1.0/exchange/currencies"
+            self.response_ramzinex = self.scraper.get(url=url)
+            check_response_ramzinex = json.loads(self.response_ramzinex.text)
+            return check_response_ramzinex
+        except Exception as e:
+            return Client.error_result(self, e=e, fname="get_currencies", response=self.response_ramzinex)
     # # # # -------------------------------------------------------------------------------- # # # #
     # # # # Private API
     # # # # -------------------------------------------------------------------------------- # # # #
@@ -208,6 +216,8 @@ class Client:
             return check_response_ramzinex
         except Exception as e:
             return Client.error_result(self, e=e, fname="get_deposits", response=self.response_ramzinex)
+
+
     # # # # -------------------------------------------------------------------------------- # # # #
     # # # # Others
     # # # # -------------------------------------------------------------------------------- # # # #
