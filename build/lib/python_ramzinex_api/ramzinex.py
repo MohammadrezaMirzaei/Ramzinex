@@ -124,7 +124,6 @@ class Client:
     # # # # -------------------------------------------------------------------------------- # # # #
     # # # # Private API
     # # # # -------------------------------------------------------------------------------- # # # #
-
     def order_limit(self, price, amount, pair_id, order_type):
         try:
             url = "https://ramzinex.com/exchange/api/v1.0/exchange/users/me/orders/limit"
@@ -216,6 +215,18 @@ class Client:
             return check_response_ramzinex
         except Exception as e:
             return Client.error_result(self, e=e, fname="get_deposits", response=self.response_ramzinex)
+    
+    def get_turnover(self):
+        try:
+            url = "https://ramzinex.com/exchange/api/v1.0/exchange/users/me/orders/turnover"
+            headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {}'.format(self.api)}
+            params = {"readable": 0, "days": 30, "pa": 1}
+            self.response_ramzinex = self.scraper.get(url=url, headers=headers, data=json.dumps(params))
+            check_response_ramzinex = json.loads(self.response_ramzinex.text)
+            return check_response_ramzinex
+        except Exception as e:
+            return Client.error_result(self, e=e, fname="get_deposits", response=self.response_ramzinex)
+        
 
 
     # # # # -------------------------------------------------------------------------------- # # # #
